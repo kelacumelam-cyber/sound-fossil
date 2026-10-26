@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; font-src 'self';"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sound Fossil — auditory fossil studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="grain" aria-hidden="true"></div>
+
+      <header class="titlebar">
+        <div class="brand">
+          <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+            <circle cx="20" cy="20" r="17.5" />
+            <circle cx="20" cy="20" r="12.5" />
+            <circle cx="20" cy="20" r="7.5" />
+            <path d="M20 2.5c7 5.5 10.8 11.4 10.8 17.5S27 32 20 37.5" />
+            <path d="M20 2.5c-7 5.5-10.8 11.4-10.8 17.5S13 32 20 37.5" />
+          </svg>
+          <div class="brand-text">
+            <h1>SOUND FOSSIL</h1>
+            <span>auditory fossil studio</span>
+          </div>
+        </div>
+
+        <div class="titlebar-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="engine-status">offline studio</span>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="panel panel-left" aria-label="Specimen sources">
+          <div class="panel-scroll">
+            <div class="section-intro">
+              <span class="section-number">01</span>
+              <h2>Specimen</h2>
+              <p>Capture a moment. The sound becomes stone without ever leaving your device.</p>
+            </div>
+
+            <section class="sample-block" aria-labelledby="mic-title">
+              <div class="mic-card">
+                <button type="button" class="mic-button" id="mic-button">
+                  <span class="mic-glyph" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <rect x="9" y="3" width="6" height="11" rx="3" />
+                      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
+                    </svg>
+                  </span>
+                  <span class="mic-copy">
+                    <strong id="mic-title">Record with microphone</strong>
+                    <small>up to 3 minutes · local</small>
+                  </span>
+                  <span class="mic-pulse" aria-hidden="true"></span>
+                </button>
+
+                <div class="recording-panel" id="recording-panel" hidden>
+                  <div class="recording-head">
+                    <span class="rec-dot" aria-hidden="true"></span>
+                    <span id="rec-time">00:00</span>
+                    <span class="rec-limit">/ 03:00</span>
+                    <span class="rec-live">live</span>
+                  </div>
+                  <div class="live-meter" id="live-meter" aria-hidden="true"></div>
+                  <div class="recording-actions">
+                    <button type="button" class="button button-primary button-small" id="stop-recording">
+                      Finish recording
+                    </button>
+                    <button type="button" class="button button-quiet button-small" id="cancel-recording">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+
+                <div class="recording-paused" id="recording-paused" hidden>
+                  <span class="spinner spinner-small" aria-hidden="true"></span>
+                  <span>Decoding recording…</span>
+                </div>
+              </div>
+            </section>
+
+            <div class="divider"><span>or</span></div>
+
+            <section class="sample-block" aria-labelledby="upload-title">
+              <div
+                class="dropzone"
+                id="dropzone"
+                role="button"
+                tabindex="0"
+                aria-labelledby="upload-title"
+                aria-describedby="upload-hint"
+              >
+                <svg class="drop-glyph" viewBox="0 0 32 32" aria-hidden="true">
+                  <path d="M16 21V5m0 0-6 6m6-6 6 6" />
+                  <path d="M5 20v5.5A1.5 1.5 0 0 0 6.5 27h19a1.5 1.5 0 0 0 1.5-1.5V20" />
+                </svg>
+                <strong id="upload-title">Drop a WAV file</strong>
+                <span id="upload-hint">or <u>choose a file</u> · PCM / float · up to 3 min</span>
+                <input
+                  type="file"
+                  id="file-input"
+                  accept=".wav,audio/wav,audio/x-wav,audio/wave"
+                  hidden
+                />
+              </div>
+
+              <div class="source-card" id="source-card" hidden>
+                <div class="source-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 3.5h9l5 5V21H5z" />
+                    <path d="M14 3.5V9h5M8 13h8M8 16.5h5" />
+                  </svg>
+                </div>
+                <div class="source-copy">
+                  <strong id="source-name">—</strong>
+                  <span id="source-meta">—</span>
+                </div>
+                <button type="button" class="icon-button" id="clear-source" title="Clear specimen">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" /></svg>
+                </button>
+              </div>
+            </section>
+
+            <div class="privacy-note">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M5 9V6.5a5 5 0 0 1 10 0V9" />
+                <rect x="3.5" y="9" width="13" height="8.5" rx="1.5" />
+              </svg>
+              <p>Your audio is never uploaded or shared. Analysis and sculpture are produced entirely on this computer.</p>
+            </div>
+
+            <div class="source-note" id="source-note" hidden>
+              <span class="source-note-mark">!</span>
+              <p id="source-note-text"></p>
+            </div>
+
+            <div class="panel-foot">
+              <span>SF · v1.0</span>
+              <span>local · deterministic</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="stage" id="stage" aria-label="Three-dimensional fossil scene">
+          <canvas id="scene" aria-label="Interactive 3D fossil sculpture"></canvas>
+          <div class="stage-glow" aria-hidden="true"></div>
+          <div class="excavation-lines" aria-hidden="true"></div>
+
+          <div class="stage-top">
+            <div class="stage-badge" id="stage-badge">
+              <span class="badge-dot"></span>
+              <span id="stage-badge-text">empty plinth</span>
+            </div>
+            <div class="stage-tools" role="toolbar" aria-label="View tools">
+              <button
+                type="button"
+                class="tool-button"
+                id="toggle-rotate"
+                aria-pressed="true"
+                title="Auto-rotate"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M16.5 8A7 7 0 1 0 17 12" />
+                  <path d="M16.7 3.5V8h-4.4" />
+                </svg>
+                <span class="tool-label">Rotate</span>
+              </button>
+              <button
+                type="button"
+                class="tool-button"
+                id="toggle-grid"
+                aria-pressed="false"
+                title="Excavation grid"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M2.5 7h15M2.5 13h15M7 2.5v15M13 2.5v15" />
+                </svg>
+                <span class="tool-label">Grid</span>
+              </button>
+              <button
+                type="button"
+                class="tool-button"
+                id="reset-view"
+                title="Reset view"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M3 8V3.5h4.5M3.4 3.9A8 8 0 1 1 2.2 11" />
+                </svg>
+                <span class="tool-label">Reset</span>
+              </button>
+              <span class="tool-separator" aria-hidden="true"></span>
+              <button type="button" class="button button-primary export-button" id="export-button" disabled>
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 13V3m0 0L6 7m4-4 4 4" />
+                  <path d="M3.5 12.5V16A1 1 0 0 0 4.5 17h11a1 1 0 0 0 1-.5v-3.5" />
+                </svg>
+                Export PNG
+              </button>
+            </div>
+          </div>
+
+          <div class="empty-state" id="empty-state">
+            <span class="empty-index" aria-hidden="true">01</span>
+            <div class="empty-content">
+              <span class="eyebrow">empty plinth</span>
+              <h2>Turn sound into a relic.</h2>
+              <p>
+                Make a short recording or drop a WAV file. Each fossil is carved
+                from your audio's amplitude, timbre, and silences.
+              </p>
+              <div class="empty-steps" aria-hidden="true">
+                <span><b>01</b> capture</span>
+                <span class="step-line"></span>
+                <span><b>02</b> carve</span>
+                <span class="step-line"></span>
+                <span><b>03</b> keep</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="loading-overlay" id="loading-overlay" hidden>
+            <div class="loading-card">
+              <span class="spinner" aria-hidden="true"></span>
+              <div>
+                <strong id="loading-title">Decoding relic…</strong>
+                <span id="loading-subtitle">separating the layers of sound</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="silent-note" id="silent-note" hidden>
+            <span class="silent-mark">≈</span>
+            <p id="silent-note-text">This specimen is nearly silent; it was carved as a slender core.</p>
+          </div>
+
+          <div class="specimen-plate" id="specimen-plate" hidden>
+            <span class="eyebrow">label</span>
+            <h2 id="specimen-name">—</h2>
+            <div class="specimen-meta">
+              <span id="specimen-code">SF-0000</span>
+              <span class="meta-sep">/</span>
+              <span id="specimen-tone">—</span>
+              <span class="meta-sep">/</span>
+              <span id="specimen-print">—</span>
+            </div>
+          </div>
+
+          <div class="stage-hint" id="stage-hint" hidden aria-hidden="true">
+            <span><b>drag</b> rotate</span>
+            <span><b>scroll</b> zoom</span>
+            <span><b>right-drag</b> pan</span>
+          </div>
+
+          <div class="stage-caption" aria-hidden="true">
+            <span>surface: iron oxide + copper patina</span>
+            <span class="caption-line"></span>
+            <span>scale: every layer is a moment in time</span>
+          </div>
+        </section>
+
+        <aside class="panel panel-right" aria-label="Fossil label and sculpture settings">
+          <div class="panel-scroll">
+            <div class="section-intro compact">
+              <span class="section-number">02</span>
+              <h2>Diagnosis</h2>
+              <p id="diagnosis-copy">No specimen yet. The label fills in when sound arrives.</p>
+            </div>
+
+            <section class="stats" id="stats" aria-label="Audio measurements">
+              <div class="stat">
+                <span class="stat-label">Duration</span>
+                <span class="stat-value" id="stat-duration">—</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Peak</span>
+                <span class="stat-value" id="stat-peak">—</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Average</span>
+                <span class="stat-value" id="stat-rms">—</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Pulse</span>
+                <span class="stat-value" id="stat-bpm">—</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Dominant frequency</span>
+                <span class="stat-value" id="stat-dominant">—</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Silence</span>
+                <span class="stat-value" id="stat-silence">—</span>
+              </div>
+            </section>
+
+            <section class="meters" aria-label="Texture meters">
+              <div class="meter-row">
+                <span class="stat-label">Brightness</span>
+                <div class="meter"><span id="meter-brightness"></span></div>
+                <span class="meter-value" id="value-brightness">—</span>
+              </div>
+              <div class="meter-row">
+                <span class="stat-label">Dynamics</span>
+                <div class="meter"><span id="meter-dynamic"></span></div>
+                <span class="meter-value" id="value-dynamic">—</span>
+              </div>
+              <div class="meter-row">
+                <span class="stat-label">Pulse regularity</span>
+                <div class="meter"><span id="meter-pulse"></span></div>
+                <span class="meter-value" id="value-pulse">—</span>
+              </div>
+            </section>
+
+            <div class="specimen-description" id="specimen-description" hidden>
+              <p id="description-text"></p>
+            </div>
+
+            <section class="settings-block" aria-labelledby="settings-title">
+              <div class="settings-heading">
+                <span class="section-number">03</span>
+                <h3 id="settings-title">Sculpture settings</h3>
+                <span class="settings-lock" title="Geometry signature">#<b id="geometry-hash">--------</b></span>
+              </div>
+
+              <label class="range-row" for="setting-strata">
+                <span class="range-label">Strata <small>vertical layers</small></span>
+                <span class="range-value" id="value-strata">128</span>
+                <input type="range" id="setting-strata" min="40" max="220" step="4" value="128" />
+              </label>
+
+              <label class="range-row" for="setting-ridge">
+                <span class="range-label">Ridge <small>timbre sharpness</small></span>
+                <span class="range-value" id="value-ridge">58%</span>
+                <input type="range" id="setting-ridge" min="0" max="100" step="1" value="58" />
+              </label>
+
+              <label class="range-row" for="setting-patina">
+                <span class="range-label">Patina <small>oxide balance</small></span>
+                <span class="range-value" id="value-patina">38%</span>
+                <input type="range" id="setting-patina" min="0" max="100" step="1" value="38" />
+              </label>
+
+              <label class="range-row" for="setting-height">
+                <span class="range-label">Height <small>sculpture scale</small></span>
+                <span class="range-value" id="value-height">2.70×</span>
+                <input type="range" id="setting-height" min="180" max="360" step="5" value="270" />
+              </label>
+
+              <label class="range-row" for="setting-twist">
+                <span class="range-label">Twist <small>layer shear</small></span>
+                <span class="range-value" id="value-twist">32%</span>
+                <input type="range" id="setting-twist" min="0" max="100" step="1" value="32" />
+              </label>
+
+              <div class="settings-actions">
+                <button type="button" class="button button-quiet button-small" id="reset-settings">
+                  Reset settings
+                </button>
+                <span class="determinism-note">same audio + same settings = same fossil</span>
+              </div>
+            </section>
+
+            <details class="mapping" id="mapping">
+              <summary>
+                <span>How to read this sculpture</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5" /></svg>
+              </summary>
+              <dl>
+                <div><dt>Height</dt><dd>Flow of time: the base is the start of the recording, the top is the end.</dd></div>
+                <div><dt>Thickness</dt><dd>RMS amplitude; louder sound swells the body.</dd></div>
+                <div><dt>Ridges</dt><dd>Spectral centroid; brighter timbre produces more numerous, sharper lobes.</dd></div>
+                <div><dt>Protrusions</dt><dd>Transient accents (onsets); beats push out through the surface.</dd></div>
+                <div><dt>Thin bands</dt><dd>Silence; the body contracts into a slender waist.</dd></div>
+                <div><dt>Color</dt><dd>Density and timbre; the patina setting shifts the oxide balance.</dd></div>
+              </dl>
+            </details>
+
+            <div class="panel-foot right">
+              <span id="app-version">Sound Fossil v1.0</span>
+              <span>entirely local</span>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="statusbar">
+        <span class="status-left" id="status-left">ready · awaiting a specimen</span>
+        <span class="status-center"><i></i> works entirely offline</span>
+        <span class="status-right">SF · 01</span>
+      </footer>
+
+      <dialog class="permission-dialog" id="permission-dialog">
+        <form method="dialog" class="permission-card">
+          <span class="eyebrow">permission request · microphone</span>
+          <h2>Allow microphone access?</h2>
+          <p>
+            Sound Fossil records only when you press the button. Recordings never leave
+            your device and are never sent to a server.
+          </p>
+          <ul>
+            <li>Recording ends when you press <b>Finish recording</b>.</li>
+            <li>If Windows blocks the microphone, you may need to allow it in system settings.</li>
+            <li>Recordings stop automatically after 3 minutes.</li>
+          </ul>
+          <div class="permission-actions">
+            <button type="submit" class="button button-quiet" value="cancel">Cancel</button>
+            <button type="submit" class="button button-primary" value="allow" id="allow-mic">
+              Use microphone
+            </button>
+          </div>
+        </form>
+      </dialog>
+
+      <div class="toast" id="toast" role="status" aria-live="polite">
+        <span class="toast-mark" id="toast-mark">i</span>
+        <p id="toast-text"></p>
+      </div>
+
+      <div class="sr-only" id="live-region" aria-live="polite"></div>
+    </div>
+
+    <script src="app.bundle.js"></script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "sound-fossil",
+  "productName": "Sound Fossil",
+  "version": "1.0.0",
+  "description": "An offline desktop studio that turns audio recordings into deterministic, interactive 3D digital fossils.",
+  "main": "src/main/main.js",
+  "type": "module",
+  "private": true,
+  "author": "Sound Fossil contributors",
+  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && electron .",
+    "test": "npm run test:unit",
+    "test:unit": "node --test tests/unit/wav.test.js tests/unit/analysis.test.js tests/unit/geometry.test.js",
+    "test:e2e": "npm run build && node --test tests/e2e/app.test.js",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "icon": "node scripts/make-icon.mjs",
+    "package": "npm run build && node scripts/package.mjs",
+    "smoke:package": "node scripts/smoke-package.mjs"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^45.0.0",
+    "esbuild": "^0.28.2",
+    "playwright-core": "^1.64.1",
+    "three": "^0.186.1"
+  }
+}

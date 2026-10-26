@@ -1,0 +1,32 @@
+node_modules/
+dist/
+release/
+artifacts/
+coverage/
+
+# Logs and caches
+*.log
+npm-debug.log*
+.cache/
+*.tmp
+*.temp
+
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+
+# Personal audio recordings
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.flac
+*.ogg
+*.opus
+*.webm
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
